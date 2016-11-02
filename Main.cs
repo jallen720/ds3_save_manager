@@ -34,8 +34,20 @@ namespace DS3_Save_Manager
             }
 
 
-            // Load config from registry.
-            backup_directory_textbox.Text = (string)registry_key.GetValue("backup_directory");
+            // Load backup directory from registry.
+            string backup_directory = (string)registry_key.GetValue("backup_directory");
+
+            // If the directory no longer exists, delete it from registry and reset backup_directory.
+            if (!string.IsNullOrEmpty(backup_directory) && !Directory.Exists(backup_directory))
+            {
+                registry_key.DeleteValue("backup_directory");
+                backup_directory = "";
+            }
+
+            backup_directory_textbox.Text = backup_directory;
+
+
+            // Load temp backup flag from registry.
             create_temp_backup_toggle.Checked = bool.Parse((string)registry_key.GetValue("create_temp_backup") ?? "true");
         }
 
